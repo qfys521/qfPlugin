@@ -8,7 +8,7 @@
  * Coding moderately is beneficial to the brain, but overindulgence in coding is harmful to the body. Arrange your time reasonably and enjoy a happy life.
  */
 
-package cn.qfys521.bot.interactors.utils;
+package cn.qfys521.qqbot.plugin.interactors.utils;
 
 import okhttp3.*;
 
@@ -20,7 +20,7 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
-import static cn.qfys521.bot.interactors.utils.SslUtils.trustAllHttpsCertificates;
+import static cn.qfys521.qqbot.plugin.interactors.utils.SslUtils.trustAllHttpsCertificates;
 
 /**
  * @author qfys521

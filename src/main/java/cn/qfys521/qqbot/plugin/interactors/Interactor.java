@@ -8,7 +8,7 @@
  * Coding moderately is beneficial to the brain, but overindulgence in coding is harmful to the body. Arrange your time reasonably and enjoy a happy life.
  */
 
-package cn.qfys521.bot.interactors;
+package cn.qfys521.qqbot.plugin.interactors;
 
 import cn.qfys521.bot.annotation.Author;
 import cn.qfys521.bot.annotation.Command;
@@ -16,32 +16,36 @@ import cn.qfys521.bot.annotation.Usage;
 import cn.qfys521.bot.config.ConfigApplication;
 import cn.qfys521.bot.config.DataConfigApplication;
 import cn.qfys521.bot.event.MessageEventKt;
-import cn.qfys521.bot.interactors.config.Coin;
-import cn.qfys521.bot.interactors.config.GetId;
-import cn.qfys521.bot.interactors.config.Jrrp;
-import cn.qfys521.bot.interactors.utils.Base64Util;
-import cn.qfys521.bot.interactors.utils.HttpUtils;
-import cn.qfys521.bot.interactors.utils.LuckAlgorithm;
-import cn.qfys521.bot.interactors.utils.minecraft.algorithm.FuzzyMatcher;
-import cn.qfys521.bot.interactors.utils.minecraft.algorithm.PrepopulatedList;
-import cn.qfys521.bot.interactors.utils.minecraft.all;
+import cn.qfys521.qqbot.plugin.interactors.config.Coin;
+import cn.qfys521.qqbot.plugin.interactors.config.GetId;
+import cn.qfys521.qqbot.plugin.interactors.config.Jrrp;
+import cn.qfys521.qqbot.plugin.interactors.utils.*;
+import cn.qfys521.qqbot.plugin.interactors.utils.minecraft.algorithm.FuzzyMatcher;
+import cn.qfys521.qqbot.plugin.interactors.utils.minecraft.algorithm.PrepopulatedList;
+import cn.qfys521.qqbot.plugin.interactors.utils.minecraft.all;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.kloping.qqbot.api.message.MessageEvent;
 import io.github.kloping.qqbot.entities.ex.Image;
+import io.github.kloping.qqbot.entities.ex.Keyboard;
 import io.github.kloping.qqbot.entities.ex.Markdown;
+import io.github.kloping.qqbot.entities.ex.MessageAsyncBuilder;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.*;
 
+import static cn.qfys521.bot.BotApplication.getLogger;
 import static cn.qfys521.bot.BotApplication.starter;
 
 @SuppressWarnings("unused")
@@ -114,27 +118,44 @@ public class Interactor {
     }
 
     @Command(value = {"/setu", "/涩图", "/色图", "/涩涩"}, inCommandList = false)
-    @Usage({
-            "/setu", "/涩图", "/色图", "/涩涩",
-            "/setu <tag>", "/涩图 <tag>", "/色图 <tag>", "/涩涩 <tag>"
-    })
+    @Usage({"/setu", "/涩图", "/色图", "/涩涩"})
+    @SuppressWarnings("all")
     public void setu(MessageEvent<?, ?> event) {
-        Markdown markdown = new Markdown("102010154_1703343254");
 
         try {
-            String result = get.getUrlData("https://api.lolicon.app/setu/v2?size=original&r18=0&excludeAI=true");
+            Markdown markdown = new Markdown("102010154_1703343254");
+            getLogger().info("markdown");
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .addInterceptor(chain -> {
+                        Request originalRequest = chain.request();
+                        Request requestWithUserAgent = originalRequest.newBuilder()
+                                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+                                .build();
+                        return chain.proceed(requestWithUserAgent);
+                    })
+                    .build();
+            Request request = new Request.Builder()
+                    .url("https://api.lolicon.app/setu/v2?size=original&r18=0&excludeAI=true")
+                    .build();
+            String result = Objects.requireNonNull(client.newCall(request).execute().body()).string();
+            getLogger().info(result);
             JSONObject jsonObject = JSON.parseObject(result);
-            JSONObject urlsObject = jsonObject.getJSONArray("data").getJSONObject(0).getJSONObject("urls");
-            event.send("如果发不出去就说明进小黑屋了QAQ");
-            starter.getBot().logger.info(jsonObject.toString());
-            starter.getBot().logger.info(urlsObject.toString());
+            JSONObject data = jsonObject.getJSONArray("data").getJSONObject(0);
+            JSONObject urlsObject = data.getJSONObject("urls");
             String originalUrl = urlsObject.getString("original");
-            starter.getBot().logger.info(originalUrl);
-            event.send(new Image(originalUrl));
+            markdown.addParam("title" , data.getString("title"))
+                    .addParam("msg1" , "作者: "+data.getString("author"))
+                    .addParam("msg2" , "pid: "+data.getString("pid"))
+                    .addParam("msg3" , "标签: "+ Arrays.toString(data.getJSONArray("tags").toArray(new String[0])))
+                    .addParam("msg4" , "上传时间: "+ LocalDateTime.ofEpochSecond(data.getLong("uploadDate")/1000, 0, ZoneOffset.ofHours(8)))
+                    .addParam("msg5" , "所在页数: "+ data.getInteger("p")+1)
+                    .addParam("img_name" , data.getString("title")).addParam("w" , String.valueOf(data.getInteger("width")))
+                    .addParam("h" , String.valueOf(data.getInteger("height")))
+                    .addParam("url" , originalUrl);
+            event.send(markdown);
         } catch (Exception e) {
-            event.send("请联系管理员."
-                    + e.getMessage()
-            );
+            event.send("请联系管理员.");
+            getLogger().waring(e.toString());
         }
     }
 
@@ -344,4 +365,45 @@ public class Interactor {
             event.send(stringBuilder.toString());
         } else event.send("数量必须为[1,50]");
     }
+
+    @Usage("/友情链接")
+    @Command("/友情链接")
+    public void friendLink(MessageEvent<?,?> event){
+        ConfigApplication configApplication = new DataConfigApplication(new FriendLink() , "friendLink.json");
+        FriendLink friendLink = (FriendLink)configApplication.getDataOrFail();
+        var arrayList = friendLink.getLinks();
+        if (arrayList==null){
+            event.send("暂未添加友情链接");
+            return;
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        for (var list:arrayList){
+            stringBuilder.append("\n").append(list.getName()).append("(").append(list.getOfficialGroup()).append(")");
+        }
+        event.send(stringBuilder.toString());
+    }
+
+    @Command(value = "/添加友情链接" , inCommandList = false)
+    @Usage("/添加友情链接 <名称> <群号>")
+    public void addFriendLink(MessageEvent<?, ?> event) {
+        ConfigApplication configApplication = new DataConfigApplication(new FriendLink(), "friendLink.json");
+        FriendLink friendLink = (FriendLink) configApplication.getDataOrFail();
+        ArrayList<Link> links = friendLink.getLinks();
+        String[] tmp = MessageEventKt.getOriginalContent(event).trim().split(" "); // 去除多余空格并按空格分割
+        if (tmp.length < 3) {
+            // 至少需要名称和群号两个参数
+            // 这里可以发送一个错误消息给用户
+            return;
+        }
+        String name = tmp[1]; // 名称是第二个参数（索引为1，因为数组索引从0开始）
+        String officialGroup = tmp[2]; // 群号是第三个参数
+        Link link = new Link();
+        link.setName(name);
+        link.setOfficialGroup(officialGroup);
+        links.add(link);
+        // 保存更新后的 FriendLink 对象到配置文件
+        configApplication.saveOrFail();
+        event.send("已添加成功");
+    }
+
 }

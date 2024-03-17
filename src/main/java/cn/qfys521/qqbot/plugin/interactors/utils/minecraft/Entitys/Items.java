@@ -8,9 +8,9 @@
  * Coding moderately is beneficial to the brain, but overindulgence in coding is harmful to the body. Arrange your time reasonably and enjoy a happy life.
  */
 
-package cn.qfys521.bot.interactors.utils.minecraft.Entitys;
+package cn.qfys521.qqbot.plugin.interactors.utils.minecraft.Entitys;
 
-import cn.qfys521.bot.interactors.utils.minecraft.Blocks.Blocks;
+import cn.qfys521.qqbot.plugin.interactors.utils.minecraft.Blocks.Blocks;
 
 import java.util.HashMap;
 

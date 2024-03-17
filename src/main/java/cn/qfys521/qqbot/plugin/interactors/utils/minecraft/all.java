@@ -8,16 +8,16 @@
  * Coding moderately is beneficial to the brain, but overindulgence in coding is harmful to the body. Arrange your time reasonably and enjoy a happy life.
  */
 
-package cn.qfys521.bot.interactors.utils.minecraft;
+package cn.qfys521.qqbot.plugin.interactors.utils.minecraft;
 
 
-import cn.qfys521.bot.interactors.utils.minecraft.Biomes.Biomes;
-import cn.qfys521.bot.interactors.utils.minecraft.Blocks.Blocks;
-import cn.qfys521.bot.interactors.utils.minecraft.Blocks.Liquid;
-import cn.qfys521.bot.interactors.utils.minecraft.Effects.Effects;
-import cn.qfys521.bot.interactors.utils.minecraft.Enchantments.Enchantments;
-import cn.qfys521.bot.interactors.utils.minecraft.Entitys.Entitys;
-import cn.qfys521.bot.interactors.utils.minecraft.Entitys.Items;
+import cn.qfys521.qqbot.plugin.interactors.utils.minecraft.Biomes.Biomes;
+import cn.qfys521.qqbot.plugin.interactors.utils.minecraft.Blocks.Blocks;
+import cn.qfys521.qqbot.plugin.interactors.utils.minecraft.Blocks.Liquid;
+import cn.qfys521.qqbot.plugin.interactors.utils.minecraft.Effects.Effects;
+import cn.qfys521.qqbot.plugin.interactors.utils.minecraft.Enchantments.Enchantments;
+import cn.qfys521.qqbot.plugin.interactors.utils.minecraft.Entitys.Entitys;
+import cn.qfys521.qqbot.plugin.interactors.utils.minecraft.Entitys.Items;
 
 import java.util.ArrayList;
 import java.util.List;
