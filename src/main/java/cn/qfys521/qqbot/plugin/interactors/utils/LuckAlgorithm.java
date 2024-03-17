@@ -50,9 +50,9 @@ public class LuckAlgorithm {
      */
     // 获取特定天数的数据(用于测试随机分布)
     public static int get(int day, long identifier, String key) {
-        int code = rfc4226(getSeed(day, identifier), key, 2);
+        int code = rfc4226(getSeed(day, identifier), key, 8);
         // 返回值是均匀分布的1到100
-        return code + 1;
+        return code%101;
     }
 
     /**
