@@ -8,7 +8,7 @@ import cn.qfys521.bot.core.Bot;
 import cn.qfys521.bot.core.plugin.JavaPlugin;
 import cn.qfys521.bot.core.plugin.PluginManager;
 import cn.qfys521.qqbot.plugin.interactors.Interactor;
-import io.github.kloping.MySpringTool.interfaces.Logger;
+import io.github.kloping.spt.interfaces.Logger;
 
 public class Main extends JavaPlugin {
     Logger getLogger = BotApplication.getLogger();
