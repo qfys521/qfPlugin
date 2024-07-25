@@ -66,7 +66,7 @@ public class Interactor {
     @SuppressWarnings("all")
     @Command({"/jrrp", "/今日人品"})
     @Usage({"/jrrp", "/今日人品"})
-    public void jrrp(MessageEvent<?, ?> event) {
+    public void jrrp(MessageEvent event) {
         long userID = event.getSender().getOpenid().hashCode();
         ConfigApplication configApplication = new DataConfigApplication(new Jrrp(), "jrrp.json");
         Jrrp jrrp = (Jrrp) configApplication.getDataOrFail();
@@ -99,7 +99,7 @@ public class Interactor {
 
     @Command({"/time", "/时间"})
     @Usage({"/time", "/时间"})
-    public void time(MessageEvent<?, ?> event) {
+    public void time(MessageEvent event) {
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         event.send("now time is: " + sdf.format(date));
@@ -107,7 +107,7 @@ public class Interactor {
 
     @Command({"/yulu", "/语录", "/随机语录"})
     @Usage({"/yulu", "/语录", "/随机语录"})
-    public void yulu(MessageEvent<?, ?> event) {
+    public void yulu(MessageEvent event) {
         try {
             event.send(get.getUrlData("https://api.oick.cn/yulu/api.php"));
         } catch (Exception e) {
@@ -120,7 +120,7 @@ public class Interactor {
     @Command(value = {"/setu", "/涩图", "/色图", "/涩涩"}, inCommandList = false)
     @Usage({"/setu", "/涩图", "/色图", "/涩涩"})
     @SuppressWarnings("all")
-    public void setu(MessageEvent<?, ?> event) {
+    public void setu(MessageEvent event) {
 
         try {
             Markdown markdown = new Markdown("102010154_1703343254");
@@ -161,7 +161,7 @@ public class Interactor {
 
     @Command({"/tgou", "/舔狗", "/随机舔狗"})
     @Usage({"/tgou", "/舔狗", "/随机舔狗"})
-    public void tgou(MessageEvent<?, ?> event) {
+    public void tgou(MessageEvent event) {
         try {
             event.send(get.getUrlData("https://api.oick.cn/dog/api.php"));
         } catch (Exception e) {
@@ -173,7 +173,7 @@ public class Interactor {
 
     @Command({"/du", "/毒鸡汤", "/毒汤"})
     @Usage({"/du", "/毒鸡汤", "/毒汤"})
-    public void du(MessageEvent<?, ?> event) {
+    public void du(MessageEvent event) {
         try {
             event.send(get.getUrlData("https://api.oick.cn/dutang/api.php"));
         } catch (Exception e) {
@@ -185,7 +185,7 @@ public class Interactor {
 
     @Command({"/yiyan", "/一言", "/随机一言"})
     @Usage({"/yiyan", "/一言", "/随机一言"})
-    public void yiyan(MessageEvent<?, ?> event) {
+    public void yiyan(MessageEvent event) {
         try {
             event.send(get.getUrlData("https://api.oick.cn/yiyan/api.php"));
         } catch (Exception e) {
@@ -198,7 +198,7 @@ public class Interactor {
 
     @Command({"/getID", "/获取ID", "/ID对照"})
     @Usage({"/getID <name>", "/获取ID <name>", "/ID对照 <name>"})
-    public void getID(MessageEvent<?, ?> event) {
+    public void getID(MessageEvent event) {
         String[] oriMessage = MessageEventKt.getOriginalContent(event).split(" ");
         if (oriMessage[2] == null) {
             event.send("用法: /getID <参数>");
@@ -232,7 +232,7 @@ public class Interactor {
 
     @Command({"/签到", "/sign"})
     @Usage({"/签到", "/sign"})
-    public void sign(MessageEvent<?, ?> event) {
+    public void sign(MessageEvent event) {
         ConfigApplication configApplication = new DataConfigApplication(new Coin(), "coin.json");
         Coin coin = (Coin) configApplication.getDataOrFail();
         if (!coin.getLastSign(event.getSender().getOpenid())) {
@@ -252,7 +252,7 @@ public class Interactor {
 
     @Command({"/getPlayerUUID", "/获取玩家UUID", "/玩家UUID获取"})
     @Usage({"/getPlayerUUID <PlayerName>", "/获取玩家UUID <PlayerName>", "/玩家UUID获取 <PlayerName>"})
-    public void getPlayerUUID(MessageEvent<?, ?> event) {
+    public void getPlayerUUID(MessageEvent event) {
         String oriMessage = MessageEventKt.getOriginalContent(event);
         String PlayerName = oriMessage.split(" ")[2].replaceAll(" ", "");
         String tmp = "OfflinePlayer:" + PlayerName;
@@ -260,12 +260,12 @@ public class Interactor {
         String offline = object.toString();
         try {
             String request = get.getUrlData("https://api.mojang.com/users/profiles/minecraft/" + PlayerName);
-            event.send(request);
+           // event.send(request);
 
             ObjectMapper objectMapper = new ObjectMapper();
             GetId b = objectMapper.readValue(request, GetId.class);
             String online = b.getId();
-            event.send(b.getId() + "\n" + b.getId() + "\n" + b.getClass());
+           // event.send(b.getId() + "\n" + b.getId() + "\n" + b.getClass());
             event.send("PlayerName:" + PlayerName + "\n" + "离线uuid为: " + offline.replaceAll("-", "") + "\n" + "正版uuid为:" + online);
         } catch (Exception e) {
             event.send("PlayerName:" + PlayerName + "\n" + "离线uuid为: " + offline.replaceAll("-", "") + "\n" + "啊这。。。。该玩家没有正版呢(悲)");
@@ -274,7 +274,7 @@ public class Interactor {
 
     @Command({"/类查询"})
     @Usage({"/类查询 <ClassForName>"})
-    public void ReflectionInteractor(MessageEvent<?, ?> event) throws Exception {
+    public void ReflectionInteractor(MessageEvent event) throws Exception {
         String name = MessageEventKt.getOriginalContent(event).split(" ")[2];
         Class<?> cl = Class.forName(name);
         Class<?> superclass = cl.getSuperclass();
@@ -349,15 +349,15 @@ public class Interactor {
 
     @Command({"/生成UUID"})
     @Usage({"/生成UUID"})
-    public void newUUID(MessageEvent<?, ?> event) {
+    public void newUUID(MessageEvent event) {
         event.send(UUID.randomUUID().toString());
     }
 
     @Command({"/批量UUID"})
-    @Usage({"/批量UUID <count[0,50)>"})
-    public void newUUID_(MessageEvent<?, ?> event) {
+    @Usage({"/批量UUID <count[0,5)>"})
+    public void newUUID_(MessageEvent event) {
         int oriMessage = Integer.parseInt(MessageEventKt.getOriginalContent(event).split(" ")[2]);
-        if (oriMessage > 0 && oriMessage <= 50) {
+        if (oriMessage > 0 && oriMessage <= 5) {
             StringBuilder stringBuilder = new StringBuilder();
             for (int i = 0; i < oriMessage; i++) {
                 stringBuilder.append(UUID.randomUUID()).append("\n");
@@ -368,7 +368,7 @@ public class Interactor {
 
     @Usage("/友情链接")
     @Command("/友情链接")
-    public void friendLink(MessageEvent<?,?> event){
+    public void friendLink(MessageEvent event){
         ConfigApplication configApplication = new DataConfigApplication(new FriendLink() , "friendLink.json");
         FriendLink friendLink = (FriendLink)configApplication.getDataOrFail();
         var arrayList = friendLink.getLinks();
@@ -385,7 +385,7 @@ public class Interactor {
 
     @Command(value = "/添加友情链接" , inCommandList = false)
     @Usage("/添加友情链接 <名称> <群号>")
-    public void addFriendLink(MessageEvent<?, ?> event) {
+    public void addFriendLink(MessageEvent event) {
         ConfigApplication configApplication = new DataConfigApplication(new FriendLink(), "friendLink.json");
         FriendLink friendLink = (FriendLink) configApplication.getDataOrFail();
         ArrayList<Link> links = friendLink.getLinks();
